@@ -64,7 +64,7 @@ jobs:
 
     - name: Deploy on EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@98.80.5.111 "
+        ssh -v -o StrictHostKeyChecking=no -i key.pem ec2-user@98.80.5.111 "
           cd /home/ec2-user/TimeManagementSystem &&
           git pull &&
           docker compose up --build -d
