@@ -8,11 +8,47 @@ on:
 
 jobs:
 
-  build:
-
+  backend-tests:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      working-directory: ./backend
+    - name: Run tests
+      run: python manage.py test
+      working-directory: ./backend
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+        cache: "npm"
+        cache-dependency-path: frontend/package-lock.json
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./frontend
+    - name: Lint
+      run: npm run lint
+      working-directory: ./frontend
+    - name: Build
+      run: npm run build
+      working-directory: ./frontend
+
+  build:
+    needs: [backend-tests, frontend-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the backend Docker image
+      run: docker build ./backend --file backend/Dockerfile --tag backend-image:$(date +%s)
+    - name: Build the frontend Docker image
+      run: docker build ./frontend --file frontend/Dockerfile --tag frontend-image:$(date +%s)
