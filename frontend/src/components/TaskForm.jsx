@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Plus, Save, X } from 'lucide-react'
 
 const emptyTask = {
@@ -10,23 +10,20 @@ const emptyTask = {
   due_date: '',
 }
 
-export default function TaskForm({ categories, editingTask, onSave, onCancel }) {
-  const [form, setForm] = useState(emptyTask)
+function taskToForm(editingTask) {
+  if (!editingTask) return emptyTask
+  return {
+    title: editingTask.title,
+    description: editingTask.description || '',
+    category: editingTask.category || '',
+    priority: editingTask.priority,
+    status: editingTask.status,
+    due_date: editingTask.due_date ? editingTask.due_date.slice(0, 16) : '',
+  }
+}
 
-  useEffect(() => {
-    if (editingTask) {
-      setForm({
-        title: editingTask.title,
-        description: editingTask.description || '',
-        category: editingTask.category || '',
-        priority: editingTask.priority,
-        status: editingTask.status,
-        due_date: editingTask.due_date ? editingTask.due_date.slice(0, 16) : '',
-      })
-    } else {
-      setForm(emptyTask)
-    }
-  }, [editingTask])
+export default function TaskForm({ categories, editingTask, onSave, onCancel }) {
+  const [form, setForm] = useState(() => taskToForm(editingTask))
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })

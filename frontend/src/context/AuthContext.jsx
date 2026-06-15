@@ -5,14 +5,10 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => !!localStorage.getItem('access'))
 
   useEffect(() => {
-    const access = localStorage.getItem('access')
-    if (!access) {
-      setLoading(false)
-      return
-    }
+    if (!localStorage.getItem('access')) return
     client
       .get('/auth/me/')
       .then(({ data }) => setUser(data))
@@ -59,6 +55,7 @@ export function AuthProvider({ children }) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext)
 }
