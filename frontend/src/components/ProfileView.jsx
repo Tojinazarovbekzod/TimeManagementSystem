@@ -9,6 +9,7 @@ export default function ProfileView({ tasks, categories }) {
   const { showToast } = useToast()
   const { theme, toggleTheme } = useTheme()
 
+  const [username, setUsername] = useState(user?.username || '')
   const [email, setEmail] = useState(user?.email || '')
   const [savingProfile, setSavingProfile] = useState(false)
 
@@ -20,10 +21,11 @@ export default function ProfileView({ tasks, categories }) {
     e.preventDefault()
     setSavingProfile(true)
     try {
-      await updateProfile({ email })
+      await updateProfile({ username, email })
       showToast('Profil yangilandi')
-    } catch {
-      showToast('Profilni yangilashda xatolik', 'error')
+    } catch (err) {
+      const msg = err?.response?.data?.username?.[0] || err?.response?.data?.email?.[0] || 'Profilni yangilashda xatolik'
+      showToast(msg, 'error')
     } finally {
       setSavingProfile(false)
     }
@@ -64,7 +66,7 @@ export default function ProfileView({ tasks, categories }) {
         <form className="task-form" onSubmit={handleProfileSubmit}>
           <label className="profile-label">
             Foydalanuvchi nomi
-            <input type="text" value={user?.username || ''} disabled />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </label>
           <label className="profile-label">
             Email
