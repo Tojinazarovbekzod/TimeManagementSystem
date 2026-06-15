@@ -1,0 +1,180 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --accent: #ec4899;
+  --accent2: #8b5cf6;
+  --bg: #eef0fb;
+  --bg-gradient:
+    radial-gradient(at 12% 8%, rgba(99, 102, 241, 0.28) 0, transparent 45%),
+    radial-gradient(at 92% 12%, rgba(236, 72, 153, 0.22) 0, transparent 45%),
+    radial-gradient(at 85% 90%, rgba(139, 92, 246, 0.22) 0, transparent 45%),
+    radial-gradient(at 8% 85%, rgba(99, 102, 241, 0.16) 0, transparent 45%),
+    #eef0fb;
+  --card: rgba(255, 255, 255, 0.55);
+  --card-solid: #ffffff;
+  --text: #1f2336;
+  --muted: #767c95;
+  --border: rgba(31, 35, 54, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --glass-blur: 18px;
+  --radius: 18px;
+  --shadow: 0 8px 32px rgba(31, 35, 54, 0.06);
+  --shadow-hover: 0 16px 40px rgba(31, 35, 54, 0.12);
+}
+
+[data-theme='dark'] {
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --accent: #f472b6;
+  --accent2: #a78bfa;
+  --bg: #0a0c14;
+  --bg-gradient:
+    radial-gradient(at 12% 8%, rgba(99, 102, 241, 0.22) 0, transparent 45%),
+    radial-gradient(at 92% 12%, rgba(236, 72, 153, 0.16) 0, transparent 45%),
+    radial-gradient(at 85% 90%, rgba(139, 92, 246, 0.2) 0, transparent 45%),
+    radial-gradient(at 8% 85%, rgba(99, 102, 241, 0.14) 0, transparent 45%),
+    #0a0c14;
+  --card: rgba(26, 29, 45, 0.55);
+  --card-solid: #181b29;
+  --text: #e8e9f3;
+  --muted: #9296b3;
+  --border: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.5);
+}
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text);
+  transition: background 0.3s ease, color 0.2s ease;
+}
+
+/* ---------- Glass surfaces ---------- */
+.glass,
+.auth-card,
+.auth-form,
+.sidebar-nav,
+.topbar,
+.stat-card,
+.task-card,
+.kanban-column,
+.category-form-big,
+.category-card,
+.stats-card-block,
+.modal,
+.toast,
+.calendar-card,
+.calendar-cell:not(.empty),
+.notification-item,
+.profile-card,
+.search-box {
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow), var(--glass-highlight);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 16px;
+  background: var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+button:hover {
+  filter: brightness(0.97);
+}
+
+[data-theme='dark'] button:hover {
+  filter: brightness(1.2);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent2), var(--accent));
+  color: white;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+button.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 28px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--text);
+  outline: none;
+  color-scheme: light;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea {
+  color-scheme: dark;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: -6px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 12px;
+}
+
+.icon-btn:hover {
+  background: var(--border);
+}
