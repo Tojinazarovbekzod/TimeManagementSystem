@@ -59,8 +59,9 @@ jobs:
     steps:
     - name: Create SSH key
       run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
+        printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" | sed 's/\\n/\n/g' > key.pem
         chmod 600 key.pem
+        ssh-keygen -y -f key.pem > /dev/null
 
     - name: Deploy on EC2
       run: |
