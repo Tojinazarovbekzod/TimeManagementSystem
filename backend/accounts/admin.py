@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
+from .models import AppUser
+
 User = get_user_model()
 
 
@@ -16,4 +18,4 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(AppUser, CustomUserAdmin)
