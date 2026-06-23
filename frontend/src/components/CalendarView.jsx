@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
 import TaskCard from './TaskCard'
 
@@ -13,6 +13,10 @@ function sameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
 }
 
+function dateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 export default function CalendarView({ tasks, categories, onEdit, onDelete, onStatusChange }) {
   const today = new Date()
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
@@ -21,20 +25,32 @@ export default function CalendarView({ tasks, categories, onEdit, onDelete, onSt
   const year = cursor.getFullYear()
   const month = cursor.getMonth()
 
-  const firstDay = new Date(year, month, 1)
-  const startOffset = (firstDay.getDay() + 6) % 7 // Monday = 0
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const { cells } = useMemo(() => {
+    const firstDay = new Date(year, month, 1)
+    const startOffset = (firstDay.getDay() + 6) % 7 // Monday = 0
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const cells = []
+    for (let i = 0; i < startOffset; i++) cells.push(null)
+    for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
+    return { cells }
+  }, [year, month])
 
-  const cells = []
-  for (let i = 0; i < startOffset; i++) cells.push(null)
-  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
+  const taskDateMap = useMemo(() => {
+    const map = {}
+    tasks.forEach((task) => {
+      if (!task.due_date) return
+      const key = dateKey(new Date(task.due_date))
+      if (!map[key]) map[key] = []
+      map[key].push(task)
+    })
+    return map
+  }, [tasks])
 
-  const tasksByDay = (day) => tasks.filter((t) => t.due_date && sameDay(new Date(t.due_date), day))
+  const getTasksForDay = (day) => taskDateMap[dateKey(day)] || []
+  const selectedTasks = getTasksForDay(selected)
 
   const goPrev = () => setCursor(new Date(year, month - 1, 1))
   const goNext = () => setCursor(new Date(year, month + 1, 1))
-
-  const selectedTasks = tasksByDay(selected)
 
   return (
     <div className="calendar-view">
@@ -53,7 +69,7 @@ export default function CalendarView({ tasks, categories, onEdit, onDelete, onSt
         <div className="calendar-grid">
           {cells.map((day, i) => {
             if (!day) return <div key={i} className="calendar-cell empty" />
-            const dayTasks = tasksByDay(day)
+            const dayTasks = getTasksForDay(day)
             const isToday = sameDay(day, today)
             const isSelected = sameDay(day, selected)
             return (

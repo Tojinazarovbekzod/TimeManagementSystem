@@ -24,7 +24,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     filterset_fields = ['status', 'priority', 'category']
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        return Task.objects.filter(user=self.request.user).select_related('category')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

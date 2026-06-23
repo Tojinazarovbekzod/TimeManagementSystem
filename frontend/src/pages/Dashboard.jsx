@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Search, Plus, Menu } from 'lucide-react'
 import client from '../api/client'
 import { useAuth } from '../context/AuthContext'
@@ -89,10 +89,14 @@ export default function Dashboard() {
     setModalOpen(true)
   }
 
-  const filteredTasks = tasks.filter((t) =>
-    t.title.toLowerCase().includes(search.toLowerCase()) ||
-    (t.description || '').toLowerCase().includes(search.toLowerCase())
-  )
+  const normalizedSearch = search.trim().toLowerCase()
+  const filteredTasks = useMemo(() => {
+    if (!normalizedSearch) return tasks
+    return tasks.filter((t) =>
+      t.title.toLowerCase().includes(normalizedSearch) ||
+      (t.description || '').toLowerCase().includes(normalizedSearch)
+    )
+  }, [tasks, normalizedSearch])
 
   return (
     <div className="app-layout">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import TaskCard from './TaskCard'
 import { Filter } from 'lucide-react'
 
@@ -12,10 +12,21 @@ export default function TasksView({ tasks, categories, onEdit, onDelete, onStatu
   const [priorityFilter, setPriorityFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
 
-  const filtered = tasks.filter((t) =>
-    (!priorityFilter || t.priority === priorityFilter) &&
-    (!categoryFilter || String(t.category) === categoryFilter)
+  const filtered = useMemo(
+    () => tasks.filter((t) =>
+      (!priorityFilter || t.priority === priorityFilter) &&
+      (!categoryFilter || String(t.category) === categoryFilter)
+    ),
+    [tasks, priorityFilter, categoryFilter]
   )
+
+  const groupedTasks = useMemo(() => {
+    const groups = { todo: [], in_progress: [], done: [] }
+    filtered.forEach((task) => {
+      if (groups[task.status]) groups[task.status].push(task)
+    })
+    return groups
+  }, [filtered])
 
   return (
     <div className="tasks-view">
@@ -37,7 +48,7 @@ export default function TasksView({ tasks, categories, onEdit, onDelete, onStatu
 
       <div className="kanban">
         {COLUMNS.map((col) => {
-          const colTasks = filtered.filter((t) => t.status === col.id)
+          const colTasks = groupedTasks[col.id]
           return (
             <div key={col.id} className="kanban-column">
               <div className="kanban-header">

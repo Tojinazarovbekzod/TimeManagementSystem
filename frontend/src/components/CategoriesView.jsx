@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Plus, Trash2, Tags } from 'lucide-react'
 import client from '../api/client'
 import { useToast } from '../context/ToastContext'
@@ -28,6 +28,13 @@ export default function CategoriesView({ categories, tasks, onChange }) {
     onChange()
   }
 
+  const categoryCounts = useMemo(() => {
+    return tasks.reduce((acc, task) => {
+      acc[task.category] = (acc[task.category] || 0) + 1
+      return acc
+    }, {})
+  }, [tasks])
+
   return (
     <div className="categories-view">
       <form onSubmit={handleAdd} className="category-form-big">
@@ -49,7 +56,7 @@ export default function CategoriesView({ categories, tasks, onChange }) {
       ) : (
         <div className="category-grid">
           {categories.map((c) => {
-            const count = tasks.filter((t) => t.category === c.id).length
+            const count = categoryCounts[c.id] || 0
             return (
               <div key={c.id} className="category-card" style={{ borderTopColor: c.color }}>
                 <div className="category-card-header">

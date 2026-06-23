@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Save, KeyRound, Sun, Moon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -47,8 +47,10 @@ export default function ProfileView({ tasks, categories }) {
     }
   }
 
-  const total = tasks.length
-  const done = tasks.filter((t) => t.status === 'done').length
+  const { total, done } = useMemo(() => ({
+    total: tasks.length,
+    done: tasks.filter((t) => t.status === 'done').length,
+  }), [tasks])
 
   return (
     <div className="profile-view">

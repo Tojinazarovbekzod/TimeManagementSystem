@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import StatsBar from './StatsBar'
 import TaskCard from './TaskCard'
 import Scene3D from './Scene3D'
@@ -5,10 +6,20 @@ import { AlertTriangle, Clock4, ListChecks } from 'lucide-react'
 import { getDueStatus } from '../utils/date'
 
 export default function Overview({ user, tasks, categories, onEdit, onDelete, onStatusChange }) {
-  const overdue = tasks.filter((t) => getDueStatus(t.due_date, t.status) === 'overdue')
-  const soon = tasks.filter((t) => getDueStatus(t.due_date, t.status) === 'soon')
-  const recent = tasks.slice(0, 6)
-  const pending = tasks.filter((t) => t.status !== 'done').length
+  const [overdue, soon, recent, pending] = useMemo(() => {
+    const overdueList = []
+    const soonList = []
+    let pendingCount = 0
+
+    tasks.forEach((task) => {
+      const dueStatus = getDueStatus(task.due_date, task.status)
+      if (dueStatus === 'overdue') overdueList.push(task)
+      if (dueStatus === 'soon') soonList.push(task)
+      if (task.status !== 'done') pendingCount += 1
+    })
+
+    return [overdueList, soonList, tasks.slice(0, 6), pendingCount]
+  }, [tasks])
 
   return (
     <div className="overview">

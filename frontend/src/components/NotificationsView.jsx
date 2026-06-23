@@ -1,13 +1,22 @@
+import { useMemo } from 'react'
 import { AlertTriangle, Clock4, BellOff, Pencil } from 'lucide-react'
 import { getDueStatus, formatDate } from '../utils/date'
 
 export default function NotificationsView({ tasks, categories, onEdit }) {
-  const overdue = tasks.filter((t) => getDueStatus(t.due_date, t.status) === 'overdue')
-  const soon = tasks.filter((t) => getDueStatus(t.due_date, t.status) === 'soon')
-  const items = [
-    ...overdue.map((t) => ({ task: t, type: 'overdue' })),
-    ...soon.map((t) => ({ task: t, type: 'soon' })),
-  ]
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.id, c])),
+    [categories]
+  )
+
+  const items = useMemo(() => {
+    const list = []
+    tasks.forEach((task) => {
+      const dueStatus = getDueStatus(task.due_date, task.status)
+      if (dueStatus === 'overdue') list.push({ task, type: 'overdue' })
+      if (dueStatus === 'soon') list.push({ task, type: 'soon' })
+    })
+    return list
+  }, [tasks])
 
   return (
     <div className="notifications-view">
@@ -19,7 +28,7 @@ export default function NotificationsView({ tasks, categories, onEdit }) {
       ) : (
         <div className="notifications-list">
           {items.map(({ task, type }) => {
-            const category = categories.find((c) => c.id === task.category)
+            const category = categoryMap[task.category]
             return (
               <div key={task.id} className={`notification-item notification-${type}`}>
                 <div className="notification-icon">

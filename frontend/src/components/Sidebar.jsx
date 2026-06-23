@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Home, ListTodo, Tags, BarChart3, CalendarDays, Bell, UserCog, LogOut, X, Sun, Moon } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import Scene3DMini from './Scene3DMini'
@@ -16,10 +17,20 @@ const NAV_ITEMS = [
 export default function Sidebar({ view, setView, user, logout, tasks = [], open, onClose }) {
   const { theme, toggleTheme } = useTheme()
 
-  const total = tasks.length
-  const done = tasks.filter((t) => t.status === 'done').length
-  const percent = total === 0 ? 0 : Math.round((done / total) * 100)
-  const alerts = tasks.filter((t) => ['overdue', 'soon'].includes(getDueStatus(t.due_date, t.status))).length
+  const { total, done, percent, alerts } = useMemo(() => {
+    const stats = { total: tasks.length, done: 0, alerts: 0 }
+
+    tasks.forEach((task) => {
+      if (task.status === 'done') stats.done += 1
+      const dueStatus = getDueStatus(task.due_date, task.status)
+      if (dueStatus === 'overdue' || dueStatus === 'soon') stats.alerts += 1
+    })
+
+    return {
+      ...stats,
+      percent: stats.total === 0 ? 0 : Math.round((stats.done / stats.total) * 100),
+    }
+  }, [tasks])
 
   return (
     <>

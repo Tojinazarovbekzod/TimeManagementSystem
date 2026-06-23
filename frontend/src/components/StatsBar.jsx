@@ -1,11 +1,19 @@
+import { useMemo } from 'react'
 import { ListTodo, Loader, CheckCircle2, ListChecks } from 'lucide-react'
 
 export default function StatsBar({ tasks }) {
-  const total = tasks.length
-  const done = tasks.filter((t) => t.status === 'done').length
-  const inProgress = tasks.filter((t) => t.status === 'in_progress').length
-  const todo = tasks.filter((t) => t.status === 'todo').length
-  const percent = total === 0 ? 0 : Math.round((done / total) * 100)
+  const { total, done, inProgress, todo, percent } = useMemo(() => {
+    const counts = { total: tasks.length, done: 0, inProgress: 0, todo: 0 }
+    tasks.forEach((task) => {
+      if (task.status === 'done') counts.done += 1
+      else if (task.status === 'in_progress') counts.inProgress += 1
+      else if (task.status === 'todo') counts.todo += 1
+    })
+    return {
+      ...counts,
+      percent: counts.total === 0 ? 0 : Math.round((counts.done / counts.total) * 100),
+    }
+  }, [tasks])
 
   return (
     <div className="stats-bar">

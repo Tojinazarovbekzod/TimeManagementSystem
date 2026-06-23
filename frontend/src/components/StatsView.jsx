@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+import { useMemo } from 'react'
 import StatsBar from './StatsBar'
 import { BarChart3, PieChart } from 'lucide-react'
 
@@ -7,19 +9,33 @@ const PRIORITY_COLORS = { low: '#10b981', medium: '#f59e0b', high: '#ef4444' }
 export default function StatsView({ tasks, categories }) {
   const total = tasks.length
 
-  const priorityCounts = ['low', 'medium', 'high'].map((p) => ({
-    key: p,
-    label: PRIORITY_LABELS[p],
-    color: PRIORITY_COLORS[p],
-    count: tasks.filter((t) => t.priority === p).length,
-  }))
+  const { priorityCounts, categoryCounts, maxCategoryCount, maxPriorityCount } = useMemo(() => {
+    const priorityMap = { low: 0, medium: 0, high: 0 }
+    const categoryMap = {}
 
-  const categoryCounts = categories
-    .map((c) => ({ ...c, count: tasks.filter((t) => t.category === c.id).length }))
-    .sort((a, b) => b.count - a.count)
+    tasks.forEach((task) => {
+      if (task.priority in priorityMap) priorityMap[task.priority] += 1
+      categoryMap[task.category] = (categoryMap[task.category] || 0) + 1
+    })
 
-  const maxCategoryCount = Math.max(1, ...categoryCounts.map((c) => c.count))
-  const maxPriorityCount = Math.max(1, ...priorityCounts.map((c) => c.count))
+    const priorityCounts = ['low', 'medium', 'high'].map((p) => ({
+      key: p,
+      label: PRIORITY_LABELS[p],
+      color: PRIORITY_COLORS[p],
+      count: priorityMap[p],
+    }))
+
+    const categoryCounts = categories
+      .map((c) => ({ ...c, count: categoryMap[c.id] || 0 }))
+      .sort((a, b) => b.count - a.count)
+
+    return {
+      priorityCounts,
+      categoryCounts,
+      maxCategoryCount: Math.max(1, ...categoryCounts.map((c) => c.count)),
+      maxPriorityCount: Math.max(1, ...priorityCounts.map((c) => c.count)),
+    }
+  }, [tasks, categories])
 
   return (
     <div className="stats-view">
