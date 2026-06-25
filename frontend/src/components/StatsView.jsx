@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useMemo } from 'react'
 import StatsBar from './StatsBar'
 import { BarChart3, PieChart } from 'lucide-react'
 
