@@ -97,15 +97,14 @@ if 'test' in sys.argv:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'TimeManagement',
-            'USER': 'root',
-            'PASSWORD': 'admin12345',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'timemanagement',
+            'USER': 'postgres',
+            'PASSWORD': 'qwerty12345',
             'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'PORT': '5432',
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
